@@ -154,18 +154,21 @@ namespace ctpktool
                 Directory.CreateDirectory(outputFolder);
             }
 
+            FilePath = Path.Combine(dir, filename); // Recombine using the OS's proper path formatting
+
             if (!String.IsNullOrWhiteSpace(dir))
             {
-                //if (!String.IsNullOrWhiteSpace(outputFolder))
-                //    dir = Path.Combine(outputFolder, dir);
+                if (!String.IsNullOrWhiteSpace(outputFolder))
+                {
+                    dir = Path.Combine(outputFolder, dir);
+                    outputFolder = "";
+                }
 
                 filename = Path.Combine(dir, filename);
 
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
             }
-
-            FilePath = filename;
 
             if(isRawExtract)
             {
