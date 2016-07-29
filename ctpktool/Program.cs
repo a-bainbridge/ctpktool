@@ -15,8 +15,15 @@ namespace ctpktool
             var settings = new CommandLine.ParserSettings(true, true, false, Console.Error);
             var parser = new CommandLine.Parser(settings);
 
-            string inputPath = "", outputPath = "";
+            string inputPath = null, outputPath = null;
             bool isExtract = false, isRawExtract = false, isCreate = false;
+
+            if(args.Length == 0)
+            {
+                // Don't try to parse zero arguments or else it results in an exception
+                Console.WriteLine(config.GetUsage());
+                Environment.Exit(-1);
+            }
 
             if (parser.ParseArguments(args, config))
             {
