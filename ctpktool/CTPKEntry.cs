@@ -144,7 +144,7 @@ namespace ctpktool
             return entry;
         }
 
-        public void ToFile(string outputFolder, bool isRawExtract = false)
+        public void ToFile(string outputFolder, bool isRawExtract = false, bool outputInfo = false)
         {
             string dir = ""; /* Path.GetDirectoryName(InternalFilePath); */
             string filename = Path.GetFileNameWithoutExtension(InternalFilePath);
@@ -184,10 +184,13 @@ namespace ctpktool
             if (!String.IsNullOrWhiteSpace(outputFolder))
                 outputPath = Path.Combine(outputFolder, outputPath);
 
-            using (TextWriter writer = new StreamWriter(outputPath + ".xml"))
+            if (outputInfo)
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(CTPKEntry));
-                serializer.Serialize(writer, this);
+                using (TextWriter writer = new StreamWriter(outputPath + ".xml"))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(CTPKEntry));
+                    serializer.Serialize(writer, this);
+                }
             }
 
             if (isRawExtract)

@@ -17,6 +17,7 @@ namespace ctpktool
 
             string inputPath = null, outputPath = null;
             bool isExtract = false, isRawExtract = false, isCreate = false;
+            bool outputInfo = false;
 
             if(args.Length == 0)
             {
@@ -27,6 +28,7 @@ namespace ctpktool
 
             if (parser.ParseArguments(args, config))
             {
+                outputInfo = config.GenInfo;
                 if (!String.IsNullOrWhiteSpace(config.InputFileRaw))
                 {
                     inputPath = config.InputFileRaw;
@@ -75,7 +77,7 @@ namespace ctpktool
             }
             else if (isExtract)
             {
-                Ctpk.Read(inputPath, outputPath, isRawExtract);
+                Ctpk.Read(inputPath, outputPath, isRawExtract, outputInfo);
             }
             else
             {

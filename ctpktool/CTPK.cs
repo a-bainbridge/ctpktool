@@ -185,7 +185,7 @@ namespace ctpktool
             return file;
         }
 
-        public static Ctpk Read(string inputPath, string outputPath, bool isRawExtract = false)
+        public static Ctpk Read(string inputPath, string outputPath, bool isRawExtract = false, bool outputInfo = false)
         {
             if (!File.Exists(inputPath))
             {
@@ -196,11 +196,11 @@ namespace ctpktool
             {
                 var data = new byte[reader.BaseStream.Length];
                 reader.Read(data, 0, data.Length);
-                return Read(data, inputPath, outputPath, isRawExtract);
+                return Read(data, inputPath, outputPath, isRawExtract, outputInfo);
             }
         }
 
-        public static Ctpk Read(byte[] data, string inputPath, string outputPath, bool isRawExtract = false)
+        public static Ctpk Read(byte[] data, string inputPath, string outputPath, bool isRawExtract = false, bool outputInfo = false)
         {
             Ctpk file = new Ctpk();
 
@@ -270,7 +270,7 @@ namespace ctpktool
                 for (int i = 0; i < file.NumberOfTextures; i++)
                 {
                     Console.WriteLine("Converting {0}...", file._entries[i].InternalFilePath);
-                    file._entries[i].ToFile(outputPath, isRawExtract);
+                    file._entries[i].ToFile(outputPath, isRawExtract, outputInfo);
                 }
             }
 

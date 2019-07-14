@@ -23,6 +23,8 @@ namespace ctpktool
         [Option('o', "output", HelpText = "Specify output file or path")]
         public string OutputPath { get; set; }
 
+        [Option('i', "info", HelpText = "Output file information")]
+        public bool GenInfo { get; set; }
         [HelpOption]
         public string GetUsage()
         {
