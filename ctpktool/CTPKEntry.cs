@@ -146,7 +146,7 @@ namespace ctpktool
 
         public void ToFile(string outputFolder, bool isRawExtract = false)
         {
-            string dir = Path.GetDirectoryName(InternalFilePath);
+            string dir = ""; /* Path.GetDirectoryName(InternalFilePath); */
             string filename = Path.GetFileNameWithoutExtension(InternalFilePath);
 
             if (!String.IsNullOrWhiteSpace(outputFolder) && !Directory.Exists(outputFolder))
