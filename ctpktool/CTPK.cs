@@ -17,6 +17,9 @@ namespace ctpktool
         public uint HashSectionOffset;
         public uint TextureInfoSection; // ??
 
+
+        public long Size; //not part of format
+
         private readonly List<CTPKEntry> _entries;
 
         public Ctpk()
@@ -220,7 +223,8 @@ namespace ctpktool
                         long resetTo = reader.BaseStream.Position + 1;
                         reader.Read(data, 0, data.Length);
                         reader.BaseStream.Seek(resetTo, SeekOrigin.Begin);
-                        Read(data, inputPath, outputPath, isRawExtract, outputInfo);
+                        Ctpk it = Read(data, inputPath, outputPath, isRawExtract, outputInfo);
+                        Console.WriteLine("Total CTPK bytes: {0}", it.Size);
                     }
                     else
                     {
@@ -233,10 +237,11 @@ namespace ctpktool
         public static Ctpk Read(byte[] data, string inputPath, string outputPath, bool isRawExtract = false, bool outputInfo = false)
         {
             Ctpk file = new Ctpk();
-
+            long BeginningPos;
             using (MemoryStream dataStream = new MemoryStream(data))
             using (BinaryReader reader = new BinaryReader(dataStream))
             {
+                BeginningPos = reader.BaseStream.Position;
                 if (reader.ReadUInt32() != Magic)
                 {
                     Console.WriteLine("ERROR: Not a valid CTPK file.");
@@ -302,8 +307,9 @@ namespace ctpktool
                     Console.WriteLine("Converting {0}...", file._entries[i].InternalFilePath);
                     file._entries[i].ToFile(outputPath, isRawExtract, outputInfo);
                 }
-            }
 
+                file.Size = reader.BaseStream.Position - BeginningPos;
+            }
             return file;
         }
     }
