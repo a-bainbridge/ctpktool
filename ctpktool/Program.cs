@@ -75,9 +75,12 @@ namespace ctpktool
             {
                 Ctpk.Create(inputPath, outputPath);
             }
-            else if (isExtract)
+            else if (isExtract && !config.GOG)
             {
                 Ctpk.Read(inputPath, outputPath, isRawExtract, outputInfo);
+            } else if (config.GOG)
+            {
+                Ctpk.ReadGOG(inputPath, outputPath, isRawExtract, outputInfo);
             }
             else
             {

@@ -46,9 +46,9 @@ namespace ctpktool
             int nextFileIndex = 0;
             for (int i = 0; i < _entries.Count; i++)
             {
-                if(_entries[i].FileIndexA == -1)
+                if (_entries[i].FileIndexA == -1)
                 {
-                    while(fileIndexes.Contains(nextFileIndex))
+                    while (fileIndexes.Contains(nextFileIndex))
                     {
                         nextFileIndex++;
                     }
@@ -94,8 +94,8 @@ namespace ctpktool
                 var curOffset = writer.BaseStream.Position;
 
                 // Fix filename offset in section 1
-                writer.BaseStream.Seek(0x20*(i+1), SeekOrigin.Begin);
-                writer.Write((uint) curOffset);
+                writer.BaseStream.Seek(0x20 * (i + 1), SeekOrigin.Begin);
+                writer.Write((uint)curOffset);
                 writer.BaseStream.Seek(curOffset, SeekOrigin.Begin);
 
                 writer.Write(Encoding.GetEncoding(932).GetBytes(entry.InternalFilePath));
@@ -132,7 +132,7 @@ namespace ctpktool
                 var curOffset = writer.BaseStream.Position;
 
                 // Fix texture data offset in section 1
-                writer.BaseStream.Seek(0x20 * (i+1) + 0x08, SeekOrigin.Begin);
+                writer.BaseStream.Seek(0x20 * (i + 1) + 0x08, SeekOrigin.Begin);
                 writer.Write(TextureSectionSize);
                 writer.BaseStream.Seek(curOffset, SeekOrigin.Begin);
 
@@ -141,7 +141,7 @@ namespace ctpktool
                 TextureSectionSize += (uint)entry.TextureRawData.Length;
             }
 
-            NumberOfTextures = (ushort) _entries.Count;
+            NumberOfTextures = (ushort)_entries.Count;
 
             writer.BaseStream.Seek(0, SeekOrigin.Begin);
             writer.Write(Magic);
@@ -159,7 +159,7 @@ namespace ctpktool
             {
                 return null;
             }
-            
+
             Ctpk file = new Ctpk();
 
             // Look for all xml definition files in the folder
@@ -172,7 +172,7 @@ namespace ctpktool
 
             for (int i = 0; i < file._entries.Count; i++)
             {
-                file._entries[i].BitmapSizeOffset = (uint)((file._entries.Count + 1)*8 + i);
+                file._entries[i].BitmapSizeOffset = (uint)((file._entries.Count + 1) * 8 + i);
             }
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(outputPath, FileMode.Create)))
@@ -200,11 +200,41 @@ namespace ctpktool
             }
         }
 
+        public static void ReadGOG(string inputPath, string outputPath, bool isRawExtract = false, bool outputInfo = false)
+        {
+            if (!File.Exists(inputPath))
+            {
+                return;
+            }
+
+            using (BinaryReader reader = new BinaryReader(File.Open(inputPath, FileMode.Open)))
+            {
+                while (reader.BaseStream.Length - reader.BaseStream.Position >= 4)
+                {
+                    var hdrStart = reader.ReadUInt32();
+                    reader.BaseStream.Seek(-4, SeekOrigin.Current); //peek the current 4 bytes
+                    if (hdrStart == Magic)
+                    {
+                        Console.WriteLine("Found a CTPK in GOG");
+                        var data = new byte[reader.BaseStream.Length - reader.BaseStream.Position];
+                        long resetTo = reader.BaseStream.Position + 1;
+                        reader.Read(data, 0, data.Length);
+                        reader.BaseStream.Seek(resetTo, SeekOrigin.Begin);
+                        Read(data, inputPath, outputPath, isRawExtract, outputInfo);
+                    }
+                    else
+                    {
+                        reader.ReadByte(); //yup
+                    }
+                }
+            }
+        }
+
         public static Ctpk Read(byte[] data, string inputPath, string outputPath, bool isRawExtract = false, bool outputInfo = false)
         {
             Ctpk file = new Ctpk();
 
-            using(MemoryStream dataStream = new MemoryStream(data))
+            using (MemoryStream dataStream = new MemoryStream(data))
             using (BinaryReader reader = new BinaryReader(dataStream))
             {
                 if (reader.ReadUInt32() != Magic)
@@ -266,7 +296,7 @@ namespace ctpktool
                     file._entries[i].TextureRawData = new byte[file._entries[i].TextureSize];
                     reader.Read(file._entries[i].TextureRawData, 0, (int)file._entries[i].TextureSize);
                 }
-                
+
                 for (int i = 0; i < file.NumberOfTextures; i++)
                 {
                     Console.WriteLine("Converting {0}...", file._entries[i].InternalFilePath);

@@ -25,6 +25,10 @@ namespace ctpktool
 
         [Option('i', "info", HelpText = "Output file information")]
         public bool GenInfo { get; set; }
+
+        [Option('g', "gog", HelpText = "Load as ASRT GOG")]
+        public bool GOG { get; set; }
+
         [HelpOption]
         public string GetUsage()
         {
